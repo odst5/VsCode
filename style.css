@@ -1,0 +1,261 @@
+/* ===== Réglages de base : couleurs ===== */
+:root {
+  --fond: #fffdf7;     /* blanc légèrement jauni (papier) */
+  --noir: #141414;     /* noir */
+  --gris: #857b61;     /* gris chaud pour les petits textes */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+/* ===== Page ===== */
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.6;
+  color: var(--noir);
+  background-color: var(--fond);
+
+  /* Variables du halo (override avec le curseur) (mises à jour par script.js) */
+  --x: -999px;
+  --y: -999px;
+  --r: 40px;       /* taille du halo */
+  --blanc: 65%;    /* intensité de l'éclaircissement (0% = aucun, 100% = couleur du fond) */
+}
+
+::selection {
+  background: var(--noir);
+  color: var(--fond);
+}
+
+/* Filtre SVG invisible (défini dans index.html) */
+.filtre-svg {
+  position: absolute;
+}
+
+/* Centrage au milieu de l'écran */
+main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4vh 0.5vw;          /* marges du site : haut/bas puis gauche/droite (le mot s'adapte tout seul à la largeur restante) */
+  overflow: clip;              /* le mot peut dépasser de l'écran (espacement, étirement) sans faire apparaître de barre de défilement */
+}
+
+.scene {
+  width: 100%;
+  text-align: center;
+}
+
+/* Zone de texte typographique */
+.zone-mot {
+  height: 40vh;                /* hauteur fixe : les curseurs ne bougent jamais */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mot {
+  flex: none;
+  display: block;
+  margin: 0;
+  white-space: nowrap;         /* jamais de retour à la ligne */
+  font-size: 20vw;             /* valeur de secours, remplacée par script.js */
+  line-height: 1.1;
+  font-weight: 400;
+  color: var(--noir);
+  outline: none;
+  cursor: text;
+  caret-color: var(--noir);
+  min-width: 0.5em;
+  opacity: 0;                  /* caché le temps que la police se charge */
+  transition: opacity 0.4s ease;            /* Animation pour l'apparition du mot au refresh */
+}
+
+.mot.pret {
+  opacity: 1;
+}
+
+/* Couleur de base des textes (utilisée par le halo) : noir, et gris pour les petits textes */
+h2, p, li {
+  --couleur: var(--noir);
+}
+
+.legende,
+.etiquette,
+.intro {
+  font-family: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --couleur: var(--gris);
+}
+
+.legende {
+  margin: 8px 0 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Curseurs */
+.reglages {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  max-width: 680px;
+  margin: 48px auto 0;
+  position: relative;          /* les réglages restent toujours au-dessus du mot, même quand il est très étiré */
+  z-index: 1;
+}
+
+.reglage {
+  display: block;
+  text-align: left;
+}
+
+.entete {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.etiquette {
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 2px;
+  margin: 0;
+  background: var(--noir);
+  outline: none;
+  cursor: pointer;
+}
+
+/* Styles des curseurs (poignées rondes) */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: 50%;
+  background: var(--noir);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: none;
+  border-radius: 50%;
+  background: var(--noir);
+}
+
+input[type="range"]:focus-visible {
+  outline: 2px solid var(--noir);
+  outline-offset: 8px;
+}
+
+/* Case à cocher (italique) */
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  position: relative;
+  top: 10px;                   /* aligne la case avec les poignées des curseurs */
+  border: 2px solid var(--noir);
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Coche dessinée à l'intérieur de la case quand elle est cochée (#141414 = la valeur de --noir) */
+input[type="checkbox"]:checked {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1.5 5.3 4 7.8 8.6 2.4' fill='none' stroke='%23141414' stroke-width='1.8'/%3E%3C/svg%3E") center / 100% 100% no-repeat;
+}
+
+input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--noir);
+  outline-offset: 4px;
+}
+
+/* Texte d'introduction (en bas de page) */
+.intro {
+  margin: 0;
+  padding: 16px 24px 24px;
+  text-align: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Titres secondaires et listes (si besoin d'en ajouter) */
+h2 {
+  font-weight: 600;
+  margin-top: 56px;
+}
+
+ul {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 0;
+  list-style: none;
+}
+
+li {
+  background-color: var(--fond);
+  margin-bottom: 10px;
+  padding: 12px 20px;
+  border-left: 3px solid var(--noir);
+}
+
+/* Halo qui éclaircit le texte sous la souris (le grand mot en est exclu, il reste noir pour qu'il se voie bien) */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  h2, p, li, .etiquette {
+    --halo: color-mix(in srgb, var(--fond) var(--blanc), var(--couleur));
+    --degrade: radial-gradient(
+      circle var(--r) at var(--x) var(--y),
+      var(--halo) 0%,
+      var(--halo) 30%,
+      color-mix(in srgb, var(--halo) 40%, var(--couleur)) 70%,
+      var(--couleur) 100%
+    );
+    background-image: var(--degrade);
+    background-attachment: fixed;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* Les cartes de liste gardent leur fond */
+  li {
+    background-image: var(--degrade), linear-gradient(var(--fond), var(--fond));
+    background-attachment: fixed, scroll;
+    -webkit-background-clip: text, border-box;
+    background-clip: text, border-box;
+  }
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 640px) {
+  .reglages {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    margin-top: 32px;
+  }
+}

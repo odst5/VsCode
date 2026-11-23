@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<!-- Header, informations de l'onglet en haut de la page -->
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ran.Font</title>
+
+  <!-- Polices Google Fonts pour que le site prenne une typographie aléatoire (nécessite une connexion internet) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@100..900&family=Roboto+Serif:wght@100..900&family=Inter:wght@100..900&family=Unbounded:wght@200..900&family=Outfit:wght@100..900&family=JetBrains+Mono:wght@100..800&family=Bricolage+Grotesque:wght@200..800&family=Sora:wght@100..800&family=Josefin+Sans:wght@100..700&family=Big+Shoulders+Display:wght@100..900&family=Epilogue:wght@100..900&family=Lexend:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<!-- Corps de la page -->
+<body>
+
+  <!-- Filtre SVG invisible : script.js s'en sert pour amincir les lettres à la graisse minimale -->
+  <svg class="filtre-svg" width="0" height="0" aria-hidden="true">
+    <filter id="grignote" x="-5%" y="-5%" width="110%" height="110%">
+      <feMorphology id="erosion" operator="erode" radius="0"/>
+    </filter>
+  </svg>
+
+  <main>
+    <section class="scene">
+
+      <!-- Le mot et la police sont choisis au hasard par script.js. + La fonction de pouvoir entrer du texte si voulu. -->
+      <div class="zone-mot">
+        <h1 id="mot" class="mot" contenteditable="true" spellcheck="false" aria-label="Texte modifiable"></h1>
+      </div>
+      <p id="legende" class="legende"></p>
+
+      <!-- Définitions des réglages pour modifier le mot. -->
+      <div class="reglages">
+        <label class="reglage" for="graisse">
+          <span class="entete">
+            <span class="etiquette">Graisse</span>
+            <output id="val-graisse" class="etiquette"></output>
+          </span>
+          <input type="range" id="graisse">
+        </label>
+
+        <label class="reglage" for="espacement">
+          <span class="entete">
+            <span class="etiquette">Espacement</span>
+            <output id="val-espacement" class="etiquette"></output>
+          </span>
+          <input type="range" id="espacement">
+        </label>
+
+        <label class="reglage" for="taille">
+          <span class="entete">
+            <span class="etiquette">Taille</span>
+            <output id="val-taille" class="etiquette"></output>
+          </span>
+          <input type="range" id="taille">
+        </label>
+
+        <label class="reglage" for="etirement-h">
+          <span class="entete">
+            <span class="etiquette">Étirement H</span>
+            <output id="val-etirement-h" class="etiquette"></output>
+          </span>
+          <input type="range" id="etirement-h">
+        </label>
+
+        <label class="reglage" for="etirement-v">
+          <span class="entete">
+            <span class="etiquette">Étirement V</span>
+            <output id="val-etirement-v" class="etiquette"></output>
+          </span>
+          <input type="range" id="etirement-v">
+        </label>
+
+        <!-- Case à cocher : passe la typographie en italique (décochée = texte normal) -->
+        <label class="reglage" for="italique">
+          <span class="entete">
+            <span class="etiquette">Italique</span>
+          </span>
+          <input type="checkbox" id="italique">
+        </label>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Footer, texte de bas de page. -->
+  <p class="intro">Ceci est ma première page web créée par IA.</p>
+
+  <script src="script.js" defer></script>
+</body>
+</html>
