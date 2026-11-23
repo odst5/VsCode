@@ -251,7 +251,7 @@ li {
   }
 }
 
-/* ===== Mobile ===== */
+/* ===== Version mobile ===== */
 @media (max-width: 640px) {
   .reglages {
     grid-template-columns: 1fr;

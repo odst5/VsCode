@@ -17,23 +17,23 @@
 <!-- Corps de la page -->
 <body>
 
-  <!-- Filtre SVG invisible : script.js s'en sert pour amincir les lettres à la graisse minimale -->
+  <!-- Filtre SVG invisible : script.js s'en sert pour amincir les lettres à la graisse minimale (problème initialement perçu)-->
   <svg class="filtre-svg" width="0" height="0" aria-hidden="true">
     <filter id="grignote" x="-5%" y="-5%" width="110%" height="110%">
       <feMorphology id="erosion" operator="erode" radius="0"/>
     </filter>
   </svg>
-
+  <!-- Contenu principal, centre de la page -->
   <main>
     <section class="scene">
 
-      <!-- Le mot et la police sont choisis au hasard par script.js. + La fonction de pouvoir entrer du texte si voulu. -->
+      <!-- Le mot au centre et sa police sont choisis au hasard par script.js. + La fonction de pouvoir entrer et modifier le texte si voulu. -->
       <div class="zone-mot">
         <h1 id="mot" class="mot" contenteditable="true" spellcheck="false" aria-label="Texte modifiable"></h1>
       </div>
       <p id="legende" class="legende"></p>
 
-      <!-- Définitions des réglages pour modifier le mot. -->
+      <!-- Définitions des réglages pour modifier le mot. Sliders disposés sous le texte, milieu bas de page -->
       <div class="reglages">
         <label class="reglage" for="graisse">
           <span class="entete">
@@ -87,9 +87,11 @@
     </section>
   </main>
 
-  <!-- Footer, texte de bas de page. -->
+  <!-- Footer, texte de bas de page -->
   <p class="intro">Ceci est ma première page web créée par IA.</p>
 
   <script src="script.js" defer></script>
 </body>
 </html>
+
+<!-- Eliot MARTINEZ--PICQUE - L3 Information & Communication. Université d'Avignon-->

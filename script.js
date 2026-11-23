@@ -2,9 +2,9 @@
    1. TYPOGRAPHIE ALÉATOIRE
    ========================================================= */
 
-// Chaque police est associée à des mots qui vont bien avec son caractère.
-// Pour en ajouter une : copiez un bloc, changez le nom (il doit exister
-// dans le lien Google Fonts de index.html), la graisse min/max et les mots.
+// Chaque police est associée à quelques mots qui vont bien avec son caractère.
+// Chaque ligne correspond à une police, son nom (il doit exister
+// dans le lien Google Fonts de index.html), sa graisse min/max et ses mots assiciés .
 // Toutes ces polices ont une graisse minimale très fine (100 ou 200).
 const polices = [
   { nom: "Fraunces",            type: "serif",      min: 100, max: 900, mots: ["Nectar", "Brioche", "Douceur", "Gourmand", "Sirop"] },
@@ -30,40 +30,45 @@ const ETIREMENT_MAX = 4;   // étirement maximal : à ±100, le mot est multipli
 
 const $ = (id) => document.getElementById(id);
 
-const mot = $("mot");
-const zone = document.querySelector(".zone-mot");
-const legende = $("legende");
+// Le mot affiché
+const mot = $("mot");                              // le grand mot (le titre <h1>)
+const zone = document.querySelector(".zone-mot");  // la zone qui contient le mot : sert à connaître la largeur disponible
+const legende = $("legende");                      // le petit texte sous le mot ("Police : NomDeLaPolice")
+ 
+// Les réglages que l'utilisateur manipule (curseurs et case à cocher)
 const graisse = $("graisse");
 const espacement = $("espacement");
 const taille = $("taille");
-const valGraisse = $("val-graisse");
-const valEspacement = $("val-espacement");
-const valTaille = $("val-taille");
 const etirementH = $("etirement-h");
 const etirementV = $("etirement-v");
 const italique = $("italique");
+ 
+// Les petites valeurs affichées à côté des curseurs (le texte est mis à jour par la fonction appliquer)
+const valGraisse = $("val-graisse");
+const valEspacement = $("val-espacement");
+const valTaille = $("val-taille");
 const valEtirementH = $("val-etirement-h");
 const valEtirementV = $("val-etirement-v");
-
-// Filtre d'érosion (défini dans index.html) : amincit les lettres sans faire apparaître
-// les chevauchements du tracé de la police
+ 
+// Filtre d'érosion (défini dans index.html) : amincit les lettres sans faire apparaître, en évitant les chevauchements du tracé de la police
 const erosion = $("erosion");
-
+ 
 function auHasard(liste) {
   return liste[Math.floor(Math.random() * liste.length)];
 }
-
+ 
 function entreDeux(min, max) {
   return min + Math.random() * (max - min);
 }
 
-// On évite de tirer deux fois de suite la même police
+// Pour éviter de tirer deux fois de suite la même police, cette fonction mémorise la dernière police dans le localStorage du navigateur
+// Puis elle tire au hasard une police différente de la dernière utilisée
 let derniere = null;
 try { derniere = localStorage.getItem("derniere-police"); } catch (e) {}
 const police = auHasard(polices.filter((p) => p.nom !== derniere));
 try { localStorage.setItem("derniere-police", police.nom); } catch (e) {}
 
-// Réglage d'un curseur (valeur de départ tirée au hasard). Un double-clic le remet à cette valeur de départ.
+// Réglage d'un curseur (valeur de départ tirée au hasard). Ainsi qu'un double-clic qui permet de remettre la valeur de départ.
 function regler(curseur, min, max, step, valeur) {
   Object.assign(curseur, { min, max, step, value: valeur });
   const depart = curseur.value;
@@ -81,7 +86,7 @@ regler(espacement, -0.1, 0.8, 0.005,
   (police.majuscules ? entreDeux(0.02, 0.15) : entreDeux(-0.03, 0.08)).toFixed(3));
 
 // Taille : en % de la taille maximale (= largeur de l'écran)
-regler(taille, 5, 100, 1, Math.round(entreDeux(40, 65)));
+regler(taille, 5, 100, 1, 35);
 
 // Étirement horizontal et vertical : de -100 à +100, position 0 (aucun étirement) à l'ouverture
 regler(etirementH, -100, 100, 1, 0);
@@ -102,15 +107,15 @@ function styleTexte(poids, espace) {
 
 // Mesure la largeur du mot pour une graisse et un espacement donnés (à 100 px de haut)
 function largeurPour(poids, espace) {
-  mot.style.transform = "none"; // on mesure sans étirement (il est réappliqué ensuite par appliquer)
+  mot.style.transform = "none"; // on mesure sans étirement (il est réappliqué ensuite par "appliquer")
   mot.style.fontSize = "100px";
   styleTexte(poids, espace);
   return mot.getBoundingClientRect().width;
 }
 
-// Calcule la taille du texte : jamais de retour à la ligne, et le curseur de taille agit sur toute sa course.
-// La taille ne dépend ni de la graisse ni de l'espacement : les lettres gardent leur taille quand on
-// épaissit ou qu'on espace le mot, et celles des extrémités sortent simplement de l'écran par les côtés.
+// Calcule la taille du texte : Empêche le retour à la ligne et permet au curseur de taille d'agir sur toute sa course.
+// La taille ne dépend ni de la graisse ni de l'espacement : les lettres gardent leur taille quand on épaissit ou qu'on espace le mot.
+// Les lettres des extrémités sortent simplement de l'écran par les côtés.
 function calculerTaille() {
   if (!mot.textContent.trim()) return;
 
@@ -134,8 +139,7 @@ function appliquer() {
   const poids = police.min + t * (police.max - police.min);
   const espace = Number(espacement.value);
 
-  // Graisse extrême : au-delà de la graisse maximale de la police, on épaissit le contour
-  // des lettres (presque illisible).
+  // Graisse extrême : au-delà de la graisse maximale de la police, on épaissit le contour des lettres.
   if (t > SEUIL_GRAS) {
     const contour = ((t - SEUIL_GRAS) / (1 - SEUIL_GRAS)) ** 1.5 * CONTOUR_MAX;
     mot.style.webkitTextStroke = contour + "em var(--noir)";
@@ -143,7 +147,7 @@ function appliquer() {
     mot.style.webkitTextStroke = "0";
   }
 
-  // Italique (décocher = texte normal)
+  // Italique (décoché = texte normal)
   mot.style.fontStyle = italique.checked ? "italic" : "normal";
 
   calculerTaille();
@@ -151,14 +155,13 @@ function appliquer() {
   styleTexte(poids, espace);
 
   // Étirement : -100 = mot divisé par ETIREMENT_MAX, 0 = taille normale, +100 = mot multiplié par ETIREMENT_MAX.
-  // Le mot est étiré depuis son centre et peut sortir de l'écran.
+  // Le mot est étiré depuis son centre et peut sortir de l'écran sur les côtés.
   const echelleX = ETIREMENT_MAX ** (etirementH.value / 100);
   const echelleY = ETIREMENT_MAX ** (etirementV.value / 100);
   mot.style.transform = `scale(${echelleX}, ${echelleY})`;
 
   // À l'autre bout, on grignote un peu les lettres pour obtenir des traits de quelques pixels
-  // seulement. L'érosion s'applique sur le rendu final, ce qui évite les trous blancs aux
-  // endroits où les tracés de la police se chevauchent.
+  // seulement. L'érosion s'applique sur le rendu final, ce qui évite les trous blancs aux endroits où les tracés de la police se chevauchent.
   const rayon = t < SEUIL_FIN ? ((SEUIL_FIN - t) / SEUIL_FIN) * EROSION_MAX * parseFloat(mot.style.fontSize) : 0;
   erosion.setAttribute("radius", rayon || 0);
   mot.style.filter = rayon > 0 ? "url(#grignote)" : "none";
@@ -201,18 +204,20 @@ Promise.race([
 /* =========================================================
    2. HALO QUI SUIT LA SOURIS
    ========================================================= */
-
+// Le halo suit la souris, mais on ne calcule sa position qu'une fois par image affichée (mouvement fluide)
 const HORS_ECRAN = -999;
 let sourisX = HORS_ECRAN;
 let sourisY = HORS_ECRAN;
 let enAttente = false;
 
+// Met à jour la position du halo (appelée par requestAnimationFrame)
 function mettreAJourHalo() {
   document.body.style.setProperty("--x", sourisX + "px");
   document.body.style.setProperty("--y", sourisY + "px");
   enAttente = false;
 }
 
+// Déplace le halo à la position (x, y) de la souris
 function deplacerHalo(x, y) {
   sourisX = x;
   sourisY = y;
@@ -230,15 +235,15 @@ document.addEventListener("mouseleave", () => deplacerHalo(HORS_ECRAN, HORS_ECRA
 
 
 /* =========================================================
-   3. SONS (discrets)
+   3. SONS
    ========================================================= */
 
-const VOLUME_TOC = 0.1;   // volume du "toc" de la case italique, de 0 (silence) à 1 (très fort)
-const VOLUME_CLIC = 0.03; // volume du petit clic des curseurs, de 0 (silence) à 1 (très fort)
-const CRANS = 40;         // nombre de clics sur toute la course d'un curseur
+const VOLUME_TOC = 0.1;   // volume du "poc" de la case italique, de 0 à 1
+const VOLUME_CLIC = 0.02; // volume du petit clic des curseurs, de 0 à 1
+const CRANS = 20;         // nombre de clics par curseur
 
-// Les sons sont synthétisés (aucun fichier). Le navigateur n'autorise le son qu'après une action
-// de l'utilisateur : le moteur audio est donc créé au premier son, qui suit toujours un clic ou une touche.
+// Les sons sont synthétisés (aucun fichier). Le navigateur n'autorise le son qu'après une action de l'utilisateur
+// Le moteur audio est donc créé au premier son, qui suit toujours un clic ou une touche.
 let contexteAudio = null;
 
 function jouer(son) {
@@ -276,14 +281,14 @@ function noteCourte(contexte, debut, aigu, grave, duree, volume, sortie) {
   note.stop(debut + duree + 0.01);
 }
 
-// Le "toc" feutré de la case italique, un peu différent à chaque fois
+// Le "poc" feutré de la case italique, un peu différent à chaque fois
 function jouerToc(contexte, debut = contexte.currentTime) {
   const variation = 0.95 + Math.random() * 0.1;
 
-  // Filtre passe-bas : c'est lui qui rend le son "feutré"
+  // Filtre passe-bas : permet de rendre le son plus "feutré"
   const filtre = contexte.createBiquadFilter();
   filtre.type = "lowpass";
-  filtre.frequency.value = 1000;
+  filtre.frequency.value = 500; // Moins d'aigu rend le son soit plus "feutré"
   filtre.connect(contexte.destination);
 
   noteCourte(contexte, debut, 330 * variation, 170 * variation, 0.14, VOLUME_TOC, filtre);
@@ -294,20 +299,20 @@ function jouerToc(contexte, debut = contexte.currentTime) {
 function jouerClic(contexte, debut = contexte.currentTime) {
   const variation = 0.95 + Math.random() * 0.1;
 
-  // Deux filtres : l'un retire tout le grave (plus de "corps", donc plus de "toc"), l'autre adoucit l'extrême aigu
+  // Deux filtres : l'un retire tout le grave, l'autre adoucit l'extrême aigu
   const filtreGrave = contexte.createBiquadFilter();
   filtreGrave.type = "highpass";
-  filtreGrave.frequency.value = 1800;
+  filtreGrave.frequency.value = 3000; // Moins de grave rend le son soit plus "sec"
   const filtreAigu = contexte.createBiquadFilter();
   filtreAigu.type = "lowpass";
-  filtreAigu.frequency.value = 5000;
+  filtreAigu.frequency.value = 5000; // Moins d'aigu rend le son soit moins "strident"
   filtreGrave.connect(filtreAigu).connect(contexte.destination);
 
   souffleBref(contexte, debut, 0.006, VOLUME_CLIC, filtreGrave);                                      // le contact du cran
   noteCourte(contexte, debut, 3600 * variation, 2800 * variation, 0.018, VOLUME_CLIC * 0.5, filtreGrave); // le petit ressort
 }
 
-// Case italique : le toc est joué quand on la coche et quand on la décoche (c'est le seul son de clic du site)
+// Case italique : le poc est joué quand on la coche et quand on la coche
 italique.addEventListener("change", () => jouer(jouerToc));
 
 // Curseurs : un petit clic à chaque cran franchi (CRANS crans sur toute la course, quelle que soit la vitesse)
